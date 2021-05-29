@@ -1,0 +1,16 @@
+{
+    "name": "LocalizationManager.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:9d080d30141581d44a4492df1562c5df"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
