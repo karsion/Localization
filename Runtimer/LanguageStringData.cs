@@ -16,6 +16,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class LanguageStringData : ScriptableObject
 {
+	private static bool isInit;
 	#region UNITY_EDITOR
 
 #if UNITY_EDITOR
@@ -31,10 +32,18 @@ public class LanguageStringData : ScriptableObject
 	#endregion
 	private static void Init()
 	{
+		if (isInit)
+		{
+			return;
+		}
+
+		isInit = true;
 		datas.Clear();
-		LanguageStringData[] lsDatas = Resources.FindObjectsOfTypeAll<LanguageStringData>();
+		LanguageStringData[] lsDatas = Resources.LoadAll<LanguageStringData>(string.Empty);
+		//Debug.Log(lsDatas.Length);
 		for (int i = 0; i < lsDatas.Length; i++)
 		{
+			//Debug.Log($"加载：{lsDatas[i].name}");
 			LanguageStringData languageStringData = lsDatas[i];
 			List<DataPair> dataPairs = languageStringData.dataPairs;
 			for (int j = 0; j < dataPairs.Count; j++)
@@ -64,5 +73,9 @@ public class LanguageStringData : ScriptableObject
 
 	public List<DataPair> dataPairs = new List<DataPair>();
 
-	private void OnValidate() { Init(); }
+	private void OnValidate()
+	{
+		isInit = false;
+		Init();
+	}
 }
