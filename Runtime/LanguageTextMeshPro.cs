@@ -9,8 +9,8 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 	[Serializable]
 	public struct TextData
 	{
-		[Multiline]
-		public string text;
+		//[Multiline]
+		//public string text;
 
 		public TMP_FontAsset fontAsset;
 		public Material fontMaterial;
@@ -52,7 +52,7 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 		TextData data = textData[nLanguage];
 		if (isSetText)
 		{
-			textSelf.text = isDB ? LanguageManager.GetLanguageStringData(key, nLanguage) : data.text;
+			textSelf.text = LanguageManager.GetLanguageStringData(key, nLanguage);
 		}
 
 		UpdateLanguage(data);
@@ -105,7 +105,7 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
         for (int i = 0; i < textData.Length; i++)
 		{
             textData[i].scale = textSelf.transform.localScale;
-            textData[i].text = textSelf.text;
+            //textData[i].text = textSelf.text;
             textData[i].fontSize = textSelf.fontSize;
             textData[i].characterSpacing = textSelf.characterSpacing;
             textData[i].wordSpacing = textSelf.wordSpacing;
@@ -113,7 +113,7 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 	}
 
 #if UNITY_EDITOR
-	private void NameGo() { gameObject.name = isDB ? $"localizedTMP[{key}]" : $"localizedTMP[{textData[0].text}]"; }
+	private void NameGo() { gameObject.name = isDB ? $"localizedTMP[{key}]" : $"localizedTMP[]"; }
 
 	public override void Refresh()
     {
