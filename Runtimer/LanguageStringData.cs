@@ -17,6 +17,7 @@ using UnityEngine;
 public class LanguageStringData : ScriptableObject
 {
 	private static bool isInit;
+	private static LanguageStringData[] lsDatas;
 	#region UNITY_EDITOR
 
 #if UNITY_EDITOR
@@ -37,13 +38,20 @@ public class LanguageStringData : ScriptableObject
 			return;
 		}
 
+		lsDatas = Resources.LoadAll<LanguageStringData>(string.Empty);
 		isInit = true;
+	}
+
+	private static void LoadData()
+	{
+		if (!isInit)
+		{
+			return;
+		}
+
 		datas.Clear();
-		LanguageStringData[] lsDatas = Resources.LoadAll<LanguageStringData>(string.Empty);
-		//Debug.Log(lsDatas.Length);
 		for (int i = 0; i < lsDatas.Length; i++)
 		{
-			//Debug.Log($"加载：{lsDatas[i].name}");
 			LanguageStringData languageStringData = lsDatas[i];
 			List<DataPair> dataPairs = languageStringData.dataPairs;
 			for (int j = 0; j < dataPairs.Count; j++)
@@ -75,7 +83,6 @@ public class LanguageStringData : ScriptableObject
 
 	private void OnValidate()
 	{
-		isInit = false;
-		Init();
+		LoadData();
 	}
 }
