@@ -20,10 +20,9 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
         public Vector3 scale;
 	}
 
-	public bool isDB;
-	[ShowIf(nameof(isDB))]
-	public string key;
 	public bool isSetText = true;
+	[EnableIf(nameof(isSetText))]
+	public string key;
 	public bool isOverrideFontAsset;
 	public bool isOverrideFontSize;
 	public bool isOverrideCharacterSpacing;
@@ -31,15 +30,6 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
     public bool isOverrideScale;
 	public TextData[] textData = new TextData[0];
 	public TMP_Text textSelf;
-
-	protected override void OnEnable()
-	{
-		base.OnEnable();
-		if (!isDB)
-		{
-			Debug.LogWarning(transform.GetPath());
-		}
-	}
 
 	public override void SwitchLanguage(int nLanguage)
 	{
@@ -105,7 +95,6 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
         for (int i = 0; i < textData.Length; i++)
 		{
             textData[i].scale = textSelf.transform.localScale;
-            //textData[i].text = textSelf.text;
             textData[i].fontSize = textSelf.fontSize;
             textData[i].characterSpacing = textSelf.characterSpacing;
             textData[i].wordSpacing = textSelf.wordSpacing;
@@ -113,7 +102,8 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 	}
 
 #if UNITY_EDITOR
-	private void NameGo() { gameObject.name = isDB ? $"localizedTMP[{key}]" : $"localizedTMP[]"; }
+	//Call by UnityRush "NameGo" button
+	private void NameGo() { gameObject.name = isSetText ? $"localizedTMP[{key}]" : "localizedTMP(StyleOnly)"; }
 
 	public override void Refresh()
     {
