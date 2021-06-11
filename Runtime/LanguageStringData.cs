@@ -16,7 +16,6 @@ using UnityEngine;
 [CreateAssetMenu]
 public class LanguageStringData : ScriptableObject
 {
-	private static bool isInit;
 	private static LanguageStringData[] lsDatas;
 	#region UNITY_EDITOR
 
@@ -33,22 +32,22 @@ public class LanguageStringData : ScriptableObject
 	#endregion
 	private static void Init()
 	{
-		if (isInit)
+		if (!EditorApplication.isPlayingOrWillChangePlaymode)
 		{
-			return;
+			ReloadData();
 		}
 
-		lsDatas = Resources.LoadAll<LanguageStringData>(string.Empty);
-		isInit = true;
+		EditorApplication.playModeStateChanged += mode =>
+		{
+			if (mode != PlayModeStateChange.EnteredEditMode) return;
+			ReloadData();
+			UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+		};
 	}
 
-	private static void LoadData()
+	public static void ReloadData()
 	{
-		if (!isInit)
-		{
-			return;
-		}
-
+		lsDatas = Resources.LoadAll<LanguageStringData>(string.Empty);
 		datas.Clear();
 		for (int i = 0; i < lsDatas.Length; i++)
 		{
@@ -80,9 +79,4 @@ public class LanguageStringData : ScriptableObject
 	}
 
 	public List<DataPair> dataPairs = new List<DataPair>();
-
-	private void OnValidate()
-	{
-		LoadData();
-	}
 }

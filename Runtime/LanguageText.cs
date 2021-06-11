@@ -7,15 +7,15 @@ public class LanguageText : MonoBehaviourLanguage
     public string[] strText;
     //[SerializeField]
     public Text textSelf;
-    public override void SwitchLanguage(int nLanguage)
+    public override void SwitchLanguage(int nLanguageIndex)
     {
-        if (nLanguage >= strText.Length)
+        if (nLanguageIndex >= strText.Length)
         {
             Debug.LogError(" SwitchLanguage Error, GameObject：" + transform.GetPath());
             return;
         }
 
-        textSelf.text = strText[nLanguage];
+        textSelf.text = strText[nLanguageIndex];
     }
 
     //自动建立数组，并引用Text中的text
