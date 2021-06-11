@@ -6,7 +6,7 @@ using UnityEditor;
 
 public interface ILanguage
 {
-    void SwitchLanguage(int nLanguage);
+    void SwitchLanguage(int nLanguageIndex);
 #if UNITY_EDITOR
     void Refresh();
 #endif
@@ -25,7 +25,7 @@ public abstract class MonoBehaviourLanguage : MonoBehaviour, ILanguage
     }
 
     protected int nLanguage => LanguageManager.nLanguage;
-    public abstract void SwitchLanguage(int nLanguage);
+    public abstract void SwitchLanguage(int nLanguageIndex);
 
     private void OnDisable()
     {
@@ -49,7 +49,7 @@ public abstract class MonoBehaviourLanguage : MonoBehaviour, ILanguage
 
     private int nPreview;
     private bool isPreview;
-    [ButtonEx("Refresh", "Current")]
+    [ButtonEx("Current")]
     protected void Preview()
     {
         nPreview = nPreview == 0 ? 1 : 0;
@@ -106,11 +106,11 @@ public static class LanguageManager
 
     public static void Remove(ILanguage language) { listILanguages.Remove(language); }
 
-    public static string GetLanguageStringData(string key, int nLanguage)
+    public static string GetLanguageStringData(string key, int nLanguageIndex)
     {
         if (key != null && LanguageStringData.datas.ContainsKey(key))
         {
-            return LanguageStringData.datas[key][nLanguage];
+            return LanguageStringData.datas[key][nLanguageIndex];
         }
 
         #region UNITY_EDITOR

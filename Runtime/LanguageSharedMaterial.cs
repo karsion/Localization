@@ -14,15 +14,15 @@ public class LanguageSharedMaterial : MonoBehaviourLanguage
     //public int materialIndex;
     public Material[] materials; //图片
 
-    public override void SwitchLanguage(int nLanguage)
+    public override void SwitchLanguage(int nLanguageIndex)
     {
-        if (materials.Length == 0 || materials.Length <= nLanguage)
+        if (materials.Length == 0 || materials.Length <= nLanguageIndex)
         {
-            Debug.Log(this.Debug(" 切换语言错误：" + nLanguage));
+            Debug.Log(this.Debug(" 切换语言错误：" + nLanguageIndex));
             return;
         }
 
-        rendererSelf.sharedMaterial = materials[nLanguage]; //如果数组元素不对，故意留着报错
+        rendererSelf.sharedMaterial = materials[nLanguageIndex]; //如果数组元素不对，故意留着报错
     }
 
 #if UNITY_EDITOR

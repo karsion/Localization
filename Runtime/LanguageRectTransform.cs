@@ -14,15 +14,15 @@ public class LanguageRectTransform : MonoBehaviourLanguage
 	}
 
     public RectTransformData[] rectTransformDatas = new RectTransformData[0];
-	public override void SwitchLanguage(int nLanguage)
+	public override void SwitchLanguage(int nLanguageIndex)
     {
-        if (rectTransformDatas.Length == 0 || rectTransformDatas.Length <= nLanguage)
+        if (rectTransformDatas.Length == 0 || rectTransformDatas.Length <= nLanguageIndex)
         {
-            Debug.Log(this.Debug(" ÇÐ»»ÓïÑÔ´íÎó£º" + nLanguage));
+            Debug.Log(this.Debug(" ÇÐ»»ÓïÑÔ´íÎó£º" + nLanguageIndex));
             return;
         }
 
-        RectTransformData rectTransformData = rectTransformDatas[nLanguage];
+        RectTransformData rectTransformData = rectTransformDatas[nLanguageIndex];
         if (isOverrideAnchoredPosition3D)
         {
             rtSelf.anchoredPosition3D = rectTransformData.anchoredPosition3D; //Èç¹ûÊý×éÔªËØ²»¶Ô£¬¹ÊÒâÁô×Å±¨´í

@@ -31,18 +31,18 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 	public TextData[] textData = new TextData[0];
 	public TMP_Text textSelf;
 
-	public override void SwitchLanguage(int nLanguage)
+	public override void SwitchLanguage(int nLanguageIndex)
 	{
-		if (nLanguage >= textData.Length)
+		if (nLanguageIndex >= textData.Length)
 		{
 			Debug.LogError(" SwitchLanguage Error, GameObject：" + transform.GetPath());
 			return;
 		}
 
-		TextData data = textData[nLanguage];
+		TextData data = textData[nLanguageIndex];
 		if (isSetText)
 		{
-			textSelf.text = LanguageManager.GetLanguageStringData(key, nLanguage);
+			textSelf.text = LanguageManager.GetLanguageStringData(key, nLanguageIndex);
 		}
 
 		UpdateLanguage(data);

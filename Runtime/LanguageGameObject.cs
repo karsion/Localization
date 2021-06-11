@@ -2,16 +2,16 @@
 public class LanguageGameObject : MonoBehaviourLanguage
 {
     public GameObject[] gos;
-    public override void SwitchLanguage(int nLanguage)
+    public override void SwitchLanguage(int nLanguageIndex)
     {
-        if (gos.Length == 0 || gos.Length <= nLanguage)
+        if (gos.Length == 0 || gos.Length <= nLanguageIndex)
         {
-            Debug.Log(this.Debug(" 切换语言错误：" + nLanguage));
+            Debug.Log(this.Debug(" 切换语言错误：" + nLanguageIndex));
             return;
         }
 
         gos.ForEach(go => go.SetActive(false));
-        gos[nLanguage].SetActive(true);//如果数组元素不对，故意留着报错
+        gos[nLanguageIndex].SetActive(true);//如果数组元素不对，故意留着报错
     }
 
     //拖放脚本的时候，自动引用子物体
