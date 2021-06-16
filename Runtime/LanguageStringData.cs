@@ -32,21 +32,20 @@ public class LanguageStringData : ScriptableObject
 	#endregion
 	private static void Init()
 	{
-		if (!EditorApplication.isPlayingOrWillChangePlaymode)
-		{
-			ReloadData();
-		}
-
+		ReloadData();
+#if UNITY_EDITOR
 		EditorApplication.playModeStateChanged += mode =>
 		{
 			if (mode != PlayModeStateChange.EnteredEditMode) return;
 			ReloadData();
 			UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
 		};
+#endif
 	}
 
 	public static void ReloadData()
 	{
+		//Debug.Log(nameof(ReloadData));
 		lsDatas = Resources.LoadAll<LanguageStringData>(string.Empty);
 		datas.Clear();
 		for (int i = 0; i < lsDatas.Length; i++)
