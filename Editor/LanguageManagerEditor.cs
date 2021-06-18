@@ -1,10 +1,5 @@
 ﻿using UnityEditor;
 
-public class GameDataEditor
-{
-
-}
-
 public class LanguageManagerEditor
 {
     private const string strMenuItemEng = "Tools/LanguageManger/Eng";

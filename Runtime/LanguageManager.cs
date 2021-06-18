@@ -106,7 +106,7 @@ public static class LanguageManager
 
     public static void Remove(ILanguage language) { listILanguages.Remove(language); }
 
-    public static string GetLanguageStringData(string key, int nLanguageIndex)
+    public static string GetText(string key, int nLanguageIndex)
     {
         if (key != null && LanguageStringData.datas.ContainsKey(key))
         {
@@ -115,15 +115,15 @@ public static class LanguageManager
 
         #region UNITY_EDITOR
 #if UNITY_EDITOR
-        Debug.LogWarning($"Key有问题：{key}");
+        Debug.LogWarning($"Key有问题：[{key}]");
 #endif
         #endregion
         return string.Empty;
     }
 
-    public static string GetLanguageStringData(string key)
+    public static string GetText(string key)
     {
-        return GetLanguageStringData(key, nLanguage);
+        return GetText(key, nLanguage);
     }
 
     public static string GetString(string str)

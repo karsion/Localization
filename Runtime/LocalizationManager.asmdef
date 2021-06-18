@@ -2,7 +2,8 @@
     "name": "LocalizationManager",
     "rootNamespace": "",
     "references": [
-        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:5b69c7ad386087d4eaa60c3b6f258f2a"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

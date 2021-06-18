@@ -1,8 +1,6 @@
-﻿// // Copyright: Shenzhen Magic Tree Games Studio
-// // Author: Nice
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 #region UNITY_EDITOR
 
@@ -11,12 +9,14 @@ using UnityEditor;
 #endif
 
 #endregion
+
 using UnityEngine;
 
 [CreateAssetMenu]
 public class LanguageStringData : ScriptableObject
 {
 	private static LanguageStringData[] lsDatas;
+
 	#region UNITY_EDITOR
 
 #if UNITY_EDITOR
@@ -25,24 +25,40 @@ public class LanguageStringData : ScriptableObject
 
 	protected void Eng() { LanguageManager.SetLanguage(1); }
 
+	[ButtonEx("LoadFromJson", "OpenJsonFile")]
+	public void SaveToJson() { JsonSavesHelper.GetSave(name + ".json").SaveFile(dataPairs); }
+
+	public void LoadFromJson()
+	{
+		if (EditorUtility.DisplayDialog("注意！", "从文件加载会丢失当前设置！", "加载", "取消"))
+		{
+			JsonSavesHelper.GetSave(name + ".json").ReadFile(ref dataPairs);
+		}
+	}
+
+	public void OpenJsonFile()
+	{
+		System.Diagnostics.Process.Start(Path.Combine(PathHelper.strSaveDataPath, name + ".json"));
+	}
+
 	[InitializeOnLoadMethod]
 #else
     [RuntimeInitializeOnLoadMethod]
 #endif
+
 	#endregion
+
 	private static void Init()
 	{
-		if (!EditorApplication.isPlayingOrWillChangePlaymode)
-		{
-			ReloadData();
-		}
-
+		ReloadData();
+#if UNITY_EDITOR
 		EditorApplication.playModeStateChanged += mode =>
 		{
 			if (mode != PlayModeStateChange.EnteredEditMode) return;
 			ReloadData();
 			UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
 		};
+#endif
 	}
 
 	public static void ReloadData()
@@ -74,8 +90,7 @@ public class LanguageStringData : ScriptableObject
 	{
 		public string key;
 
-		[Multiline]
-		public string[] data;
+		[Multiline(2)] public string[] data;
 	}
 
 	public List<DataPair> dataPairs = new List<DataPair>();
