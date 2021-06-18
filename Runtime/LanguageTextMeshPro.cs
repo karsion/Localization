@@ -127,7 +127,7 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 		TextData data = textData[nLanguageIndex];
 		if (isSetText)
 		{
-			textSelf.text = LanguageManager.GetLanguageStringData(key, nLanguageIndex);
+			textSelf.text = LanguageManager.GetText(key, nLanguageIndex);
 		}
 
 		UpdateLanguage(data);
