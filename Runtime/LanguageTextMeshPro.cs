@@ -73,6 +73,7 @@ public class TextDataDrawer : PropertyDrawer
 
 #endregion
 
+[RequireComponent(typeof(TextMeshProUGUI))]
 public class LanguageTextMeshPro : MonoBehaviourLanguage
 {
 	public bool isSetText = true;
