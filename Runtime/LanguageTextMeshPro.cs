@@ -25,7 +25,7 @@ public class TextDataDrawer : PropertyDrawer
 		}
 
 		LanguageTextMeshPro ltmp = property.serializedObject.targetObject as LanguageTextMeshPro;
-		GUIContent empty = EditorGUIUtilityEx.TempContent(string.Empty);
+		GUIContent empty = EditorGUIUtility.TrTempContent(string.Empty);
 		Rect line = position;
 		line.height = EditorGUIUtility.singleLineHeight;
 		Rect lineToggle = line;
