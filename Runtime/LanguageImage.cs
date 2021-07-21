@@ -9,6 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Image))]
 public class LanguageImage : MonoBehaviourLanguage
 {
     public bool isSetNativeSize = true;

@@ -1,20 +1,23 @@
 using System;
 using UnityEngine;
 
+[RequireComponent(typeof(LanguageRectTransform))]
 public class LanguageRectTransform : MonoBehaviourLanguage
 {
     public bool isOverrideAnchoredPosition3D = true;
     public bool isOverrideAizeDelta;
     public RectTransform rtSelf; //¿Ø¼þ
+
     [Serializable]
-	public struct RectTransformData
+    public struct RectTransformData
     {
-		public Vector3 anchoredPosition3D;
+        public Vector3 anchoredPosition3D;
         public Vector2 sizeDelta;
-	}
+    }
 
     public RectTransformData[] rectTransformDatas = new RectTransformData[0];
-	public override void SwitchLanguage(int nLanguageIndex)
+
+    public override void SwitchLanguage(int nLanguageIndex)
     {
         if (rectTransformDatas.Length == 0 || rectTransformDatas.Length <= nLanguageIndex)
         {
@@ -39,10 +42,7 @@ public class LanguageRectTransform : MonoBehaviourLanguage
 
     protected override void Setup()
     {
-        if (!rtSelf)
-        {
-            rtSelf = GetComponent<RectTransform>();
-        }
+        if (!rtSelf) { rtSelf = GetComponent<RectTransform>(); }
 
         if (rtSelf)
         {
