@@ -1,10 +1,59 @@
 using System;
 using UnityEngine;
 
+#region UNITY_EDITOR
+
+#if UNITY_EDITOR
+using UnityEditor;
+
+[CustomPropertyDrawer(typeof(LanguageRectTransform.RectTransformData))]
+public class RectTransformDataDrawer : PropertyDrawer
+{
+	public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    {
+        return EditorGUI.GetPropertyHeight(property, label, true);
+    }
+
+	public override void OnGUI(Rect position, SerializedProperty property, GUIContent title)
+	{
+		static void NextLine(ref Rect rect, ref Rect lineToggle1)
+		{
+			rect.y += EditorGUIUtility.singleLineHeight + 2;
+			lineToggle1.y += EditorGUIUtility.singleLineHeight + 2;
+		}
+
+        LanguageRectTransform ltmp = property.serializedObject.targetObject as LanguageRectTransform;
+		GUIContent empty = EditorGUIUtility.TrTextContent(string.Empty);
+		Rect line = position;
+		line.height = EditorGUIUtility.singleLineHeight;
+		Rect lineToggle = line;
+		lineToggle.width = 20;
+		line.x += lineToggle.width;
+		line.width -= lineToggle.width;
+		ltmp.isOverrideAnchoredPosition3D = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideAnchoredPosition3D);
+		using (new EditorGUI.DisabledScope(!ltmp.isOverrideAnchoredPosition3D))
+		{
+			EditorGUI.PropertyField(line, property.FindPropertyRelative("anchoredPosition3D"), true);
+		}
+
+		NextLine(ref line, ref lineToggle);
+		ltmp.isOverrideAizeDelta = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideAizeDelta);
+		using (new EditorGUI.DisabledScope(!ltmp.isOverrideAizeDelta))
+		{
+			EditorGUI.PropertyField(line, property.FindPropertyRelative("sizeDelta"), true);
+		}
+	}
+}
+#endif
+
+#endregion
+
 [RequireComponent(typeof(LanguageRectTransform))]
 public class LanguageRectTransform : MonoBehaviourLanguage
 {
+    [HideInInspector]
     public bool isOverrideAnchoredPosition3D = true;
+    [HideInInspector]
     public bool isOverrideAizeDelta;
     public RectTransform rtSelf; //¿Ø¼þ
 
@@ -50,9 +99,10 @@ public class LanguageRectTransform : MonoBehaviourLanguage
             for (int i = 0; i < rectTransformDatas.Length; i++)
             {
                 RectTransform rectTransform = transform as RectTransform;
-                rectTransformDatas[i] = new RectTransformData();
-                rectTransformDatas[i].sizeDelta = rectTransform.sizeDelta;
-                rectTransformDatas[i].anchoredPosition3D = rectTransform.anchoredPosition3D;
+                rectTransformDatas[i] = new RectTransformData
+                {
+                    sizeDelta = rectTransform.sizeDelta, anchoredPosition3D = rectTransform.anchoredPosition3D
+                };
             }
 
             base.Setup();
