@@ -13,8 +13,9 @@ public class TextDataDrawer : PropertyDrawer
 {
 	public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 	{
-		return EditorGUIUtility.singleLineHeight * 7;
-	}
+        return 20 * 6;
+		//return EditorGUIUtility.singleLineHeight * 7;
+    }
 
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent title)
 	{

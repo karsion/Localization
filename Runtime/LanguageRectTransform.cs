@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 #region UNITY_EDITOR
 
@@ -9,52 +10,51 @@ using UnityEditor;
 [CustomPropertyDrawer(typeof(LanguageRectTransform.RectTransformData))]
 public class RectTransformDataDrawer : PropertyDrawer
 {
-	public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        return EditorGUI.GetPropertyHeight(property, label, true);
-    }
+    public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => 20 * 3;
 
-	public override void OnGUI(Rect position, SerializedProperty property, GUIContent title)
-	{
-		static void NextLine(ref Rect rect, ref Rect lineToggle1)
-		{
-			rect.y += EditorGUIUtility.singleLineHeight + 2;
-			lineToggle1.y += EditorGUIUtility.singleLineHeight + 2;
-		}
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent title)
+    {
+        static void NextLine(ref Rect rect, ref Rect lineToggle1)
+        {
+            rect.y += EditorGUIUtility.singleLineHeight + 2;
+            lineToggle1.y += EditorGUIUtility.singleLineHeight + 2;
+        }
 
         LanguageRectTransform ltmp = property.serializedObject.targetObject as LanguageRectTransform;
-		GUIContent empty = EditorGUIUtility.TrTextContent(string.Empty);
-		Rect line = position;
-		line.height = EditorGUIUtility.singleLineHeight;
-		Rect lineToggle = line;
-		lineToggle.width = 20;
-		line.x += lineToggle.width;
-		line.width -= lineToggle.width;
-		ltmp.isOverrideAnchoredPosition3D = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideAnchoredPosition3D);
-		using (new EditorGUI.DisabledScope(!ltmp.isOverrideAnchoredPosition3D))
-		{
-			EditorGUI.PropertyField(line, property.FindPropertyRelative("anchoredPosition3D"), true);
-		}
+        GUIContent empty = EditorGUIUtility.TrTextContent(string.Empty);
+        Rect line = position;
+        line.height = EditorGUIUtility.singleLineHeight;
+        Rect lineToggle = line;
+        lineToggle.width = 20;
+        line.x += lineToggle.width;
+        line.width -= lineToggle.width;
+        ltmp.isOverrideAnchoredPosition3D = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideAnchoredPosition3D);
+        using (new EditorGUI.DisabledScope(!ltmp.isOverrideAnchoredPosition3D))
+        {
+            EditorGUI.PropertyField(line, property.FindPropertyRelative("anchoredPosition3D"), true);
+        }
 
-		NextLine(ref line, ref lineToggle);
-		ltmp.isOverrideAizeDelta = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideAizeDelta);
-		using (new EditorGUI.DisabledScope(!ltmp.isOverrideAizeDelta))
-		{
-			EditorGUI.PropertyField(line, property.FindPropertyRelative("sizeDelta"), true);
-		}
-	}
+        NextLine(ref line, ref lineToggle);
+        ltmp.isOverrideSizeDelta = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideSizeDelta);
+        using (new EditorGUI.DisabledScope(!ltmp.isOverrideSizeDelta))
+        {
+            EditorGUI.PropertyField(line, property.FindPropertyRelative("sizeDelta"), true);
+        }
+    }
 }
 #endif
 
 #endregion
 
-[RequireComponent(typeof(LanguageRectTransform))]
+[RequireComponent(typeof(RectTransform))]
 public class LanguageRectTransform : MonoBehaviourLanguage
 {
-    [HideInInspector]
-    public bool isOverrideAnchoredPosition3D = true;
-    [HideInInspector]
-    public bool isOverrideAizeDelta;
+    [HideInInspector] public bool isOverrideAnchoredPosition3D = true;
+
+    [FormerlySerializedAs("isOverrideAizeDelta")] [HideInInspector]
+    public bool isOverrideSizeDelta;
+
+    [HideInInspector] public bool isOverrideScale;
     public RectTransform rtSelf; //控件
 
     [Serializable]
@@ -62,6 +62,7 @@ public class LanguageRectTransform : MonoBehaviourLanguage
     {
         public Vector3 anchoredPosition3D;
         public Vector2 sizeDelta;
+        public Vector3 scale;
     }
 
     public RectTransformData[] rectTransformDatas = new RectTransformData[0];
@@ -74,16 +75,12 @@ public class LanguageRectTransform : MonoBehaviourLanguage
             return;
         }
 
-        RectTransformData rectTransformData = rectTransformDatas[nLanguageIndex];
-        if (isOverrideAnchoredPosition3D)
-        {
-            rtSelf.anchoredPosition3D = rectTransformData.anchoredPosition3D; //如果数组元素不对，故意留着报错
-        }
+        RectTransformData rectTransformData = rectTransformDatas[nLanguageIndex]; //如果数组元素不对，故意留着报错
+        if (isOverrideAnchoredPosition3D) { rtSelf.anchoredPosition3D = rectTransformData.anchoredPosition3D; }
 
-        if (isOverrideAizeDelta)
-        {
-            rtSelf.sizeDelta = rectTransformData.sizeDelta; //如果数组元素不对，故意留着报错
-        }
+        if (isOverrideSizeDelta) { rtSelf.sizeDelta = rectTransformData.sizeDelta; }
+
+        if (isOverrideScale) { rtSelf.localScale = rectTransformData.scale; }
     }
 
 #if UNITY_EDITOR
@@ -101,7 +98,8 @@ public class LanguageRectTransform : MonoBehaviourLanguage
                 RectTransform rectTransform = transform as RectTransform;
                 rectTransformDatas[i] = new RectTransformData
                 {
-                    sizeDelta = rectTransform.sizeDelta, anchoredPosition3D = rectTransform.anchoredPosition3D
+                    sizeDelta = rectTransform.sizeDelta, anchoredPosition3D = rectTransform.anchoredPosition3D,
+                    scale = rectTransform.localScale,
                 };
             }
 
