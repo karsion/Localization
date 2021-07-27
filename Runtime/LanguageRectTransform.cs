@@ -20,7 +20,7 @@ public class RectTransformDataDrawer : PropertyDrawer
             lineToggle1.y += EditorGUIUtility.singleLineHeight + 2;
         }
 
-        LanguageRectTransform ltmp = property.serializedObject.targetObject as LanguageRectTransform;
+        LanguageRectTransform languageRectTransform = property.serializedObject.targetObject as LanguageRectTransform;
         GUIContent empty = EditorGUIUtility.TrTextContent(string.Empty);
         Rect line = position;
         line.height = EditorGUIUtility.singleLineHeight;
@@ -28,17 +28,25 @@ public class RectTransformDataDrawer : PropertyDrawer
         lineToggle.width = 20;
         line.x += lineToggle.width;
         line.width -= lineToggle.width;
-        ltmp.isOverrideAnchoredPosition3D = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideAnchoredPosition3D);
-        using (new EditorGUI.DisabledScope(!ltmp.isOverrideAnchoredPosition3D))
+        languageRectTransform.isOverrideAnchoredPosition3D = EditorGUI.ToggleLeft(lineToggle, empty, languageRectTransform.isOverrideAnchoredPosition3D);
+        using (new EditorGUI.DisabledScope(!languageRectTransform.isOverrideAnchoredPosition3D))
         {
             EditorGUI.PropertyField(line, property.FindPropertyRelative("anchoredPosition3D"), true);
         }
 
         NextLine(ref line, ref lineToggle);
-        ltmp.isOverrideSizeDelta = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideSizeDelta);
-        using (new EditorGUI.DisabledScope(!ltmp.isOverrideSizeDelta))
+        languageRectTransform.isOverrideSizeDelta = EditorGUI.ToggleLeft(lineToggle, empty, languageRectTransform.isOverrideSizeDelta);
+        using (new EditorGUI.DisabledScope(!languageRectTransform.isOverrideSizeDelta))
         {
             EditorGUI.PropertyField(line, property.FindPropertyRelative("sizeDelta"), true);
+        }
+
+        NextLine(ref line, ref lineToggle);
+        languageRectTransform.isOverrideScale =
+            EditorGUI.ToggleLeft(lineToggle, empty, languageRectTransform.isOverrideScale);
+        using (new EditorGUI.DisabledScope(!languageRectTransform.isOverrideScale))
+        {
+            EditorGUI.PropertyField(line, property.FindPropertyRelative("scale"), true);
         }
     }
 }
