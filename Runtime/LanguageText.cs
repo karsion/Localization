@@ -80,8 +80,6 @@ public class LanguageText : MonoBehaviourLanguage
 
     [HideInInspector] public bool isOverrideScale;
 
-    [Multiline] public string[] strText;
-
     [Serializable]
     public struct TextData
     {
