@@ -106,9 +106,33 @@ public static class LanguageManager
 
     public static void Remove(ILanguage language) { listILanguages.Remove(language); }
 
+    public static bool TryGetAudioClip(string key, int nLanguageIndex, out AudioClip audioClip)
+    {
+	    if (!string.IsNullOrEmpty(key) && LanguageAudioClipData.datas.ContainsKey(key))
+	    {
+		    audioClip = LanguageAudioClipData.datas[key][nLanguageIndex];
+		    return true;
+	    }
+
+	    #region UNITY_EDITOR
+#if UNITY_EDITOR
+	    Debug.LogWarning($"Key有问题：[{key}]");
+#endif
+	    #endregion
+
+	    audioClip = null;
+	    return false;
+    }
+
+    public static bool TryGetAudioClip(string key, out AudioClip audioClip)
+    {
+	    return TryGetAudioClip(key, nLanguage, out audioClip);
+    }
+
+
     public static string GetText(string key, int nLanguageIndex)
     {
-        if (key != null && LanguageStringData.datas.ContainsKey(key))
+        if (!string.IsNullOrEmpty(key) && LanguageStringData.datas.ContainsKey(key))
         {
             return LanguageStringData.datas[key][nLanguageIndex];
         }

@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
 
 #region UNITY_EDITOR
 
@@ -18,24 +14,13 @@ using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class LanguageStringData : ScriptableObject
+public class LanguageAudioClipData : ScriptableObject
 {
-    private static LanguageStringData[] lsDatas;
+    private static LanguageAudioClipData[] lsDatas;
 
     #region UNITY_EDITOR
 
 #if UNITY_EDITOR
-    [ButtonEx("Eng")]
-    protected void Chs()
-    {
-        LanguageManager.SetLanguage(0);
-    }
-
-    protected void Eng()
-    {
-        LanguageManager.SetLanguage(1);
-    }
-	
     [ButtonEx("AddGroupName", "RemoveGroupName")]
     private void SortAlphabetically()
     {
@@ -76,23 +61,6 @@ public class LanguageStringData : ScriptableObject
 	    }
     }
 
-    [ButtonEx("LoadFromJson", "OpenJsonFile")]
-    public void SaveToJson()
-    {
-        JsonSavesHelper.GetSave(name + ".json").SaveFile(dataPairs);
-    }
-
-    public void LoadFromJson()
-    {
-        if (EditorUtility.DisplayDialog("注意！", "从文件加载会丢失当前设置！", "加载", "取消"))
-            JsonSavesHelper.GetSave(name + ".json").ReadFile(ref dataPairs);
-    }
-
-    public void OpenJsonFile()
-    {
-        System.Diagnostics.Process.Start(Path.Combine(PathHelper.strSaveDataPath, name + ".json"));
-    }
-
     [InitializeOnLoadMethod]
 #else
     [RuntimeInitializeOnLoadMethod]
@@ -104,22 +72,22 @@ public class LanguageStringData : ScriptableObject
     {
         ReloadData();
 #if UNITY_EDITOR
-        EditorApplication.playModeStateChanged += mode =>
-        {
-            if (mode != PlayModeStateChange.EnteredEditMode) return;
-            ReloadData();
-            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-        };
+		EditorApplication.playModeStateChanged += mode =>
+		{
+			if (mode != PlayModeStateChange.EnteredEditMode) return;
+			ReloadData();
+			UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+		};
 #endif
-    }
+	}
 
-    public static void ReloadData()
+	public static void ReloadData()
     {
-        lsDatas = Resources.LoadAll<LanguageStringData>(string.Empty);
+        lsDatas = Resources.LoadAll<LanguageAudioClipData>(string.Empty);
         datas.Clear();
         for (int i = 0; i < lsDatas.Length; i++)
         {
-            LanguageStringData languageStringData = lsDatas[i];
+	        LanguageAudioClipData languageStringData = lsDatas[i];
             List<DataPair> dataPairs = languageStringData.dataPairs;
             for (int j = 0; j < dataPairs.Count; j++)
             {
@@ -133,7 +101,7 @@ public class LanguageStringData : ScriptableObject
                     StringBuilder stringBuilder = new StringBuilder($"重复的数据：[{instanceDataPair.key}]").AppendLine().Append(" 文件：");
                     for (int k = 0; k < lsDatas.Length; k++)
                     {
-                        LanguageStringData stringData = lsDatas[k];
+	                    LanguageAudioClipData stringData = lsDatas[k];
                         if (stringData.dataPairs.Exists(d => d.key == instanceDataPair.key))
                         {
                             stringBuilder.Append(" [").Append(stringData.name).Append("] ");
@@ -153,14 +121,13 @@ public class LanguageStringData : ScriptableObject
         }
     }
 
-    public static Dictionary<string, string[]> datas = new Dictionary<string, string[]>();
+    public static Dictionary<string, AudioClip[]> datas = new Dictionary<string, AudioClip[]>();
 
     [Serializable]
     public struct DataPair : IComparable<DataPair>
     {
         public string key;
-
-        [Multiline(2)] public string[] data;
+        public AudioClip[] data;
         public int CompareTo(DataPair other) => String.CompareOrdinal(key, other.key);
     }
 
