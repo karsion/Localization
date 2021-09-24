@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading;
 
 #region UNITY_EDITOR
 
@@ -32,7 +36,6 @@ public class LanguageStringData : ScriptableObject
         LanguageManager.SetLanguage(1);
     }
 
-    [ButtonEx("LoadFromJson", "OpenJsonFile")]
     public void SaveToJson()
     {
         JsonSavesHelper.GetSave(name + ".json").SaveFile(dataPairs);
@@ -47,6 +50,13 @@ public class LanguageStringData : ScriptableObject
     public void OpenJsonFile()
     {
         System.Diagnostics.Process.Start(Path.Combine(PathHelper.strSaveDataPath, name + ".json"));
+    }
+
+    [ButtonEx("SaveToJson", "LoadFromJson", "OpenJsonFile")]
+    private void SortAlphabetically()
+    {
+		dataPairs.Sort();
+		EditorUtility.SetDirty(this);
     }
 
     [InitializeOnLoadMethod]
@@ -112,11 +122,12 @@ public class LanguageStringData : ScriptableObject
     public static Dictionary<string, string[]> datas = new Dictionary<string, string[]>();
 
     [Serializable]
-    public struct DataPair
+    public struct DataPair : IComparable<DataPair>
     {
         public string key;
 
         [Multiline(2)] public string[] data;
+        public int CompareTo(DataPair other) => String.CompareOrdinal(key, other.key);
     }
 
     public List<DataPair> dataPairs = new List<DataPair>();
