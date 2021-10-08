@@ -120,6 +120,18 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 
 	public override void SwitchLanguage(int nLanguageIndex)
 	{
+		#region EDITOR
+
+#if UNITY_EDITOR
+		if (!textSelf)
+		{
+			textSelf = GetComponent<TMP_Text>();
+			base.Setup();
+		}
+#endif
+
+		#endregion
+
 		if (nLanguageIndex >= textData.Length)
 		{
 			Debug.LogError(" SwitchLanguage Error, GameObject：" + transform.GetPath());
