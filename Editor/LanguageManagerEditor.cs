@@ -1,4 +1,33 @@
 ﻿using UnityEditor;
+using UnityEngine;
+using UnityToolbarExtender;
+
+[InitializeOnLoad]
+public class LanguageManagerLeftButton
+{
+	static LanguageManagerLeftButton()
+	{
+		ToolbarExtender.LeftToolbarGUI.Add(OnToolbarGUI);
+	}
+
+	static void OnToolbarGUI()
+	{
+		GUILayout.FlexibleSpace();
+		GUILayout.Label("Localization: ");
+
+		if (GUILayout.Button(EditorGUIUtility.TrTempContent("CHS"), GUILayout.Width(64)))
+		{
+			LanguageManager.SetLanguage(0);
+		}
+
+		if (GUILayout.Button(EditorGUIUtility.TrTempContent("EN"), GUILayout.Width(64)))
+		{
+			LanguageManager.SetLanguage(1);
+		}
+
+		GUILayout.Space(128);
+	}
+}
 
 public class LanguageManagerEditor
 {
