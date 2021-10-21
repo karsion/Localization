@@ -114,5 +114,10 @@ public class LanguageRectTransform : MonoBehaviourLanguage
             base.Setup();
         }
     }
+
+    private void OnValidate()
+    {
+	    SwitchLanguage(LanguageManager.nLanguage);
+    }
 #endif
 }
