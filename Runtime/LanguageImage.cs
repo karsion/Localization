@@ -39,6 +39,8 @@ public class LanguageImage : MonoBehaviourLanguage
     }
 
 #if UNITY_EDITOR
+	private void NameGo() { gameObject.name = $"localizedImage[{sprites[0].name}]"; }
+
     private void Reset() { Setup(); }
 
     protected override void Setup()
