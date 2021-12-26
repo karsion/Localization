@@ -79,7 +79,7 @@ public class LanguageStringData : ScriptableObject
     [ButtonEx("LoadFromJson", "OpenJsonFile")]
     public void SaveToJson()
     {
-        JsonSavesHelper.GetSave(name + ".json").SaveFile(dataPairs);
+		JsonSavesHelper.GetSave(name + ".json").SaveFile(dataPairs);
     }
 
     public void LoadFromJson()
