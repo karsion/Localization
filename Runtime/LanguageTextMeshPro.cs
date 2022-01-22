@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
 
 #region UNITY_EDITOR
@@ -11,12 +12,9 @@ using Object = UnityEngine.Object;
 [CustomPropertyDrawer(typeof(LanguageTextMeshPro.TextData))]
 public class TextDataDrawer : PropertyDrawer
 {
-	public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-	{
-        return 20 * 6;
-		//return EditorGUIUtility.singleLineHeight * 7;
-    }
+	public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => 20 * 7;
 
+	//return EditorGUIUtility.singleLineHeight * 7;
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent title)
 	{
 		static void NextLine(ref Rect rect, ref Rect lineToggle1)
@@ -46,6 +44,13 @@ public class TextDataDrawer : PropertyDrawer
 		using (new EditorGUI.DisabledScope(!ltmp.isOverrideFontSize))
 		{
 			EditorGUI.PropertyField(line, property.FindPropertyRelative("fontSize"), true);
+		}
+
+		NextLine(ref line, ref lineToggle);
+		ltmp.isOverrideFontStyles = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideFontStyles);
+		using (new EditorGUI.DisabledScope(!ltmp.isOverrideFontStyles))
+		{
+			EditorGUI.PropertyField(line, property.FindPropertyRelative("fontStyle"), true);
 		}
 
 		NextLine(ref line, ref lineToggle);
@@ -85,6 +90,8 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 
 	[HideInInspector] public bool isOverrideFontSize;
 
+	[HideInInspector] public bool isOverrideFontStyles;
+
 	[HideInInspector] public bool isOverrideCharacterSpacing;
 
 	[HideInInspector] public bool isOverrideWordSpacing;
@@ -98,15 +105,9 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 	private void Reset()
 	{
 		textSelf = GetComponent<TMP_Text>();
-		if (!textSelf)
-		{
-			return;
-		}
+		if (!textSelf) { return; }
 
-		if (textData != null && textData.Length > 0)
-		{
-			return;
-		}
+		if (textData != null && textData.Length > 0) { return; }
 
 		textData = new TextData[LanguageManager.nLanguageCount];
 		for (int i = 0; i < textData.Length; i++)
@@ -139,10 +140,7 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 		}
 
 		TextData data = textData[nLanguageIndex];
-		if (isSetText)
-		{
-			textSelf.text = LanguageManager.GetText(key, nLanguageIndex);
-		}
+		if (isSetText) { textSelf.text = LanguageManager.GetText(key, nLanguageIndex); }
 
 		UpdateLanguage(data);
 	}
@@ -155,25 +153,15 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 			textSelf.fontMaterial = data.fontMaterial;
 		}
 
-		if (isOverrideFontSize && data.fontSize > 0)
-		{
-			textSelf.fontSize = data.fontSize;
-		}
+		if (isOverrideFontSize && data.fontSize > 0) { textSelf.fontSize = data.fontSize; }
 
-		if (isOverrideCharacterSpacing)
-		{
-			textSelf.characterSpacing = data.characterSpacing;
-		}
+		if (isOverrideFontStyles) { textSelf.fontStyle = data.fontStyle; }
 
-		if (isOverrideWordSpacing)
-		{
-			textSelf.wordSpacing = data.wordSpacing;
-		}
+		if (isOverrideCharacterSpacing) { textSelf.characterSpacing = data.characterSpacing; }
 
-		if (isOverrideScale)
-		{
-			textSelf.transform.localScale = data.scale;
-		}
+		if (isOverrideWordSpacing) { textSelf.wordSpacing = data.wordSpacing; }
+
+		if (isOverrideScale) { textSelf.transform.localScale = data.scale; }
 	}
 
 	[Serializable]
@@ -182,6 +170,7 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 		public TMP_FontAsset fontAsset;
 		public Material fontMaterial;
 		public float fontSize;
+		public FontStyles fontStyle;
 		public float characterSpacing;
 		public float wordSpacing;
 		public Vector3 scale;
@@ -195,10 +184,7 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 	{
 		for (int i = 0; i < textData.Length; i++)
 		{
-			if (textData[i].scale == Vector3.zero)
-			{
-				textData[i].scale = Vector3.one;
-			}
+			if (textData[i].scale == Vector3.zero) { textData[i].scale = Vector3.one; }
 		}
 
 		base.Refresh();
@@ -214,7 +200,8 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 	private void PingDataFloder()
 	{
 		Object obj = AssetDatabase.LoadMainAssetAtPath("Assets/Localization/Resources");
-		if (obj == null) return;
+		if (obj == null) { return; }
+
 		EditorGUIUtility.PingObject(obj);
 		Selection.activeObject = obj;
 	}
