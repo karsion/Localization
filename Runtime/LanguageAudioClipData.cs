@@ -18,15 +18,33 @@ public class LanguageAudioClipData : ScriptableObject
 {
     private static LanguageAudioClipData[] lsDatas;
 
+    public string findData;
+
     #region UNITY_EDITOR
 
 #if UNITY_EDITOR
-    [ButtonEx("AddGroupName", "RemoveGroupName")]
+    [ButtonEx("SortAlphabetically2", "AddGroupName", "RemoveGroupName")]
     private void SortAlphabetically()
     {
 	    Undo.RecordObject(this, "Sort");
 	    dataPairs.Sort();
 	    EditorUtility.SetDirty(this);
+    }
+
+    private void SortAlphabetically2()
+    {
+	    Undo.RecordObject(this, "Sort");
+	    dataPairs.Sort((pair, dataPair) => pair.data[0].name.CompareTo(dataPair.data[0].name));
+	    EditorUtility.SetDirty(this);
+    }
+
+    private void PrintDataName()
+    {
+	    for (int j = 0; j < dataPairs.Count; j++)
+	    {
+		    DataPair instanceDataPair = dataPairs[j];
+		    Debug.Log(instanceDataPair.data[0].name);
+	    }
     }
 
     private void AddGroupName()

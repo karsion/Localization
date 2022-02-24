@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 [CustomPropertyDrawer(typeof(LanguageTextMeshPro.TextData))]
 public class TextDataDrawer : PropertyDrawer
 {
-	public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => 20 * 7;
+	public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => 20 * 9;
 
 	//return EditorGUIUtility.singleLineHeight * 7;
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent title)
@@ -43,8 +43,33 @@ public class TextDataDrawer : PropertyDrawer
 		ltmp.isOverrideFontSize = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideFontSize);
 		using (new EditorGUI.DisabledScope(!ltmp.isOverrideFontSize))
 		{
-			EditorGUI.PropertyField(line, property.FindPropertyRelative("fontSize"), true);
+			SerializedProperty spAutoSize = property.FindPropertyRelative("autoSize");
+			using (new EditorGUI.DisabledScope(spAutoSize.boolValue))
+			{
+				EditorGUI.PropertyField(line, property.FindPropertyRelative("fontSize"), true);
+				NextLine(ref line, ref lineToggle);
+			}
+
+			EditorGUI.indentLevel++;
+			EditorGUI.PropertyField(line, spAutoSize, true);
+			NextLine(ref line, ref lineToggle);
+
+			Rect halfLine = line;
+			float labelWidth = EditorGUIUtility.labelWidth;
+			halfLine.width = labelWidth;
+			EditorGUI.LabelField(halfLine, "Auto Size Options");
+			halfLine.x += halfLine.width;
+			halfLine.width = (line.width - labelWidth) * .5f;
+			EditorGUIUtility.labelWidth = 32;
+			EditorGUI.PropertyField(halfLine, property.FindPropertyRelative("fontSizeMin"),
+				EditorGUIUtility.TrTextContent("Min"));
+			halfLine.x += halfLine.width;
+			EditorGUI.PropertyField(halfLine, property.FindPropertyRelative("fontSizeMax"),
+				EditorGUIUtility.TrTextContent("Max"));
+			EditorGUIUtility.labelWidth = labelWidth;
+			EditorGUI.indentLevel--;
 		}
+
 
 		NextLine(ref line, ref lineToggle);
 		ltmp.isOverrideFontStyles = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideFontStyles);
@@ -153,7 +178,21 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 			textSelf.fontMaterial = data.fontMaterial;
 		}
 
-		if (isOverrideFontSize && data.fontSize > 0) { textSelf.fontSize = data.fontSize; }
+		if (isOverrideFontSize && data.fontSize > 0)
+		{
+			if (data.autoSize)
+			{
+				textSelf.enableAutoSizing = true;
+				if (data.fontSizeMin > 0) { textSelf.fontSizeMin = data.fontSizeMin; }
+
+				if (data.fontSizeMax > 0) { textSelf.fontSizeMax = data.fontSizeMax; }
+			}
+			else
+			{
+				textSelf.enableAutoSizing = false;
+				if (data.fontSize > 0) { textSelf.fontSize = data.fontSize; }
+			}
+		}
 
 		if (isOverrideFontStyles) { textSelf.fontStyle = data.fontStyle; }
 
@@ -170,6 +209,9 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 		public TMP_FontAsset fontAsset;
 		public Material fontMaterial;
 		public float fontSize;
+		public bool autoSize;
+		public float fontSizeMin;
+		public float fontSizeMax;
 		public FontStyles fontStyle;
 		public float characterSpacing;
 		public float wordSpacing;
