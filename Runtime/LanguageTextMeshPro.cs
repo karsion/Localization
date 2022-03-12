@@ -2,7 +2,6 @@
 using TMPro;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
 
 #region UNITY_EDITOR
@@ -14,7 +13,6 @@ public class TextDataDrawer : PropertyDrawer
 {
 	public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => 20 * 9;
 
-	//return EditorGUIUtility.singleLineHeight * 7;
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent title)
 	{
 		static void NextLine(ref Rect rect, ref Rect lineToggle1)
@@ -24,6 +22,8 @@ public class TextDataDrawer : PropertyDrawer
 		}
 
 		LanguageTextMeshPro ltmp = property.serializedObject.targetObject as LanguageTextMeshPro;
+		LanguageTextMeshPro.OverrideOptions options = ltmp.overrideOptions;
+
 		GUIContent empty = EditorGUIUtility.TrTextContent(string.Empty);
 		Rect line = position;
 		line.height = EditorGUIUtility.singleLineHeight;
@@ -31,8 +31,11 @@ public class TextDataDrawer : PropertyDrawer
 		lineToggle.width = 20;
 		line.x += lineToggle.width;
 		line.width -= lineToggle.width;
-		ltmp.isOverrideFontAsset = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideFontAsset);
-		using (new EditorGUI.DisabledScope(!ltmp.isOverrideFontAsset))
+
+		SerializedProperty overriteOptionsProperty = property.serializedObject.FindProperty("overrideOptions");
+		float labelWidth = EditorGUIUtility.labelWidth;
+		PropertyFieldNoName(lineToggle, overriteOptionsProperty, "isOverrideFontAsset", empty, labelWidth);
+		using (new EditorGUI.DisabledScope(!options.isOverrideFontAsset))
 		{
 			EditorGUI.PropertyField(line, property.FindPropertyRelative("fontAsset"), true);
 			NextLine(ref line, ref lineToggle);
@@ -40,8 +43,8 @@ public class TextDataDrawer : PropertyDrawer
 		}
 
 		NextLine(ref line, ref lineToggle);
-		ltmp.isOverrideFontSize = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideFontSize);
-		using (new EditorGUI.DisabledScope(!ltmp.isOverrideFontSize))
+		PropertyFieldNoName(lineToggle, overriteOptionsProperty, "isOverrideFontSize", empty, labelWidth);
+		using (new EditorGUI.DisabledScope(!options.isOverrideFontSize))
 		{
 			SerializedProperty spAutoSize = property.FindPropertyRelative("autoSize");
 			using (new EditorGUI.DisabledScope(spAutoSize.boolValue))
@@ -55,7 +58,7 @@ public class TextDataDrawer : PropertyDrawer
 			NextLine(ref line, ref lineToggle);
 
 			Rect halfLine = line;
-			float labelWidth = EditorGUIUtility.labelWidth;
+			//float labelWidth = EditorGUIUtility.labelWidth;
 			halfLine.width = labelWidth;
 			EditorGUI.LabelField(halfLine, "Auto Size Options");
 			halfLine.x += halfLine.width;
@@ -72,32 +75,75 @@ public class TextDataDrawer : PropertyDrawer
 
 
 		NextLine(ref line, ref lineToggle);
-		ltmp.isOverrideFontStyles = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideFontStyles);
-		using (new EditorGUI.DisabledScope(!ltmp.isOverrideFontStyles))
+		PropertyFieldNoName(lineToggle, overriteOptionsProperty, "isOverrideFontStyles", empty, labelWidth);
+		using (new EditorGUI.DisabledScope(!options.isOverrideFontStyles))
 		{
 			EditorGUI.PropertyField(line, property.FindPropertyRelative("fontStyle"), true);
 		}
 
 		NextLine(ref line, ref lineToggle);
-		ltmp.isOverrideCharacterSpacing = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideCharacterSpacing);
-		using (new EditorGUI.DisabledScope(!ltmp.isOverrideCharacterSpacing))
+		PropertyFieldNoName(lineToggle, overriteOptionsProperty, "isOverrideCharacterSpacing", empty, labelWidth);
+		using (new EditorGUI.DisabledScope(!options.isOverrideCharacterSpacing))
 		{
 			EditorGUI.PropertyField(line, property.FindPropertyRelative("characterSpacing"), true);
 		}
 
 		NextLine(ref line, ref lineToggle);
-		ltmp.isOverrideWordSpacing = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideWordSpacing);
-		using (new EditorGUI.DisabledScope(!ltmp.isOverrideWordSpacing))
+		PropertyFieldNoName(lineToggle, overriteOptionsProperty, "isOverrideWordSpacing", empty, labelWidth);
+		using (new EditorGUI.DisabledScope(!options.isOverrideWordSpacing))
 		{
 			EditorGUI.PropertyField(line, property.FindPropertyRelative("wordSpacing"), true);
 		}
 
 		NextLine(ref line, ref lineToggle);
-		ltmp.isOverrideScale = EditorGUI.ToggleLeft(lineToggle, empty, ltmp.isOverrideScale);
-		using (new EditorGUI.DisabledScope(!ltmp.isOverrideScale))
+		PropertyFieldNoName(lineToggle, overriteOptionsProperty, "isOverrideScale", empty, labelWidth);
+		using (new EditorGUI.DisabledScope(!options.isOverrideScale))
 		{
 			EditorGUI.PropertyField(line, property.FindPropertyRelative("scale"), true);
 		}
+
+	}
+
+	private static void PropertyFieldNoName(Rect lineToggle, SerializedProperty overriteOptionsProperty, string propertyRelative, GUIContent empty,
+		float labelWidth)
+	{
+		EditorGUIUtility.labelWidth = 0;
+		EditorGUI.PropertyField(lineToggle, overriteOptionsProperty.FindPropertyRelative(propertyRelative), empty);
+		EditorGUIUtility.labelWidth = labelWidth;
+	}
+}
+
+[CustomPropertyDrawer(typeof(LanguageTextMeshPro.OverrideOptions))]
+public class OverrideOptionsDrawer : PropertyDrawer
+{
+	public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => 20;
+
+	public override void OnGUI(Rect position, SerializedProperty property, GUIContent title)
+	{
+		int toggleWidth = 20;
+		Rect line = position;
+		GUIContent empty = EditorGUIUtility.TrTextContent(string.Empty);
+		LanguageTextMeshPro ltmp = property.serializedObject.targetObject as LanguageTextMeshPro;
+		line.width = EditorGUIUtility.labelWidth;
+		EditorGUI.PropertyField(line, property, EditorGUIUtility.TrTextContent(property.displayName));
+		line.x += EditorGUIUtility.labelWidth;
+		line.width = toggleWidth;
+		ltmp.overrideOptions.isOverrideFontAsset =
+			EditorGUI.ToggleLeft(line, empty, ltmp.overrideOptions.isOverrideFontAsset);
+		line.x += toggleWidth;
+		ltmp.overrideOptions.isOverrideFontSize =
+			EditorGUI.ToggleLeft(line, empty, ltmp.overrideOptions.isOverrideFontSize);
+		line.x += toggleWidth;
+		ltmp.overrideOptions.isOverrideFontStyles =
+			EditorGUI.ToggleLeft(line, empty, ltmp.overrideOptions.isOverrideFontStyles);
+		line.x += toggleWidth;
+		ltmp.overrideOptions.isOverrideCharacterSpacing =
+			EditorGUI.ToggleLeft(line, empty, ltmp.overrideOptions.isOverrideCharacterSpacing);
+		line.x += toggleWidth;
+		ltmp.overrideOptions.isOverrideWordSpacing =
+			EditorGUI.ToggleLeft(line, empty, ltmp.overrideOptions.isOverrideWordSpacing);
+		line.x += toggleWidth;
+		ltmp.overrideOptions.isOverrideScale = EditorGUI.ToggleLeft(line, empty, ltmp.overrideOptions.isOverrideScale);
 	}
 }
 #endif
@@ -107,9 +153,26 @@ public class TextDataDrawer : PropertyDrawer
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class LanguageTextMeshPro : MonoBehaviourLanguage
 {
-	public bool isSetText = true;
+	[Serializable]
+	public struct OverrideOptions
+	{
+		[HideInInspector] public bool isOverrideFontAsset;
+
+		[HideInInspector] public bool isOverrideFontSize;
+
+		[HideInInspector] public bool isOverrideFontStyles;
+
+		[HideInInspector] public bool isOverrideCharacterSpacing;
+
+		[HideInInspector] public bool isOverrideWordSpacing;
+
+		[HideInInspector] public bool isOverrideScale;
+	}
 
 	[EnableIf(nameof(isSetText))] public string key;
+	public bool isSetText = true;
+
+	public OverrideOptions overrideOptions;
 
 	[HideInInspector] public bool isOverrideFontAsset;
 
@@ -139,6 +202,8 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 		{
 			textData[i].scale = textSelf.transform.localScale;
 			textData[i].fontSize = textSelf.fontSize;
+			textData[i].fontSizeMin = textSelf.fontSizeMin;
+			textData[i].fontSizeMax = textSelf.fontSizeMax;
 			textData[i].characterSpacing = textSelf.characterSpacing;
 			textData[i].wordSpacing = textSelf.wordSpacing;
 		}
@@ -172,13 +237,13 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 
 	private void UpdateLanguage(TextData data)
 	{
-		if (isOverrideFontAsset)
+		if (overrideOptions.isOverrideFontAsset)
 		{
 			textSelf.font = data.fontAsset;
 			textSelf.fontMaterial = data.fontMaterial;
 		}
 
-		if (isOverrideFontSize && data.fontSize > 0)
+		if (overrideOptions.isOverrideFontSize && data.fontSize > 0)
 		{
 			if (data.autoSize)
 			{
@@ -194,13 +259,13 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 			}
 		}
 
-		if (isOverrideFontStyles) { textSelf.fontStyle = data.fontStyle; }
+		if (overrideOptions.isOverrideFontStyles) { textSelf.fontStyle = data.fontStyle; }
 
-		if (isOverrideCharacterSpacing) { textSelf.characterSpacing = data.characterSpacing; }
+		if (overrideOptions.isOverrideCharacterSpacing) { textSelf.characterSpacing = data.characterSpacing; }
 
-		if (isOverrideWordSpacing) { textSelf.wordSpacing = data.wordSpacing; }
+		if (overrideOptions.isOverrideWordSpacing) { textSelf.wordSpacing = data.wordSpacing; }
 
-		if (isOverrideScale) { textSelf.transform.localScale = data.scale; }
+		if (overrideOptions.isOverrideScale) { textSelf.transform.localScale = data.scale; }
 	}
 
 	[Serializable]
@@ -238,7 +303,6 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 		base.Setup();
 	}
 
-	[ButtonEx]
 	private void PingDataFloder()
 	{
 		Object obj = AssetDatabase.LoadMainAssetAtPath("Assets/Localization/Resources");
@@ -246,6 +310,43 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 
 		EditorGUIUtility.PingObject(obj);
 		Selection.activeObject = obj;
+	}
+
+	[ButtonEx("PingDataFloder")]
+	private void UpdateOverrideValue()
+	{
+		overrideOptions.isOverrideFontAsset = isOverrideFontAsset;
+		overrideOptions.isOverrideFontStyles = isOverrideFontStyles;
+		overrideOptions.isOverrideFontSize = isOverrideFontSize;
+		overrideOptions.isOverrideCharacterSpacing = isOverrideCharacterSpacing;
+		overrideOptions.isOverrideWordSpacing = isOverrideWordSpacing;
+		overrideOptions.isOverrideScale = isOverrideScale;
+		EditorUtility.SetDirty(this);
+	}
+
+	private static SerializedObject copyer; 
+	[ButtonEx("PasteStyles")]
+	private void CopyStyles()
+	{
+		copyer = new SerializedObject(this);
+	}
+
+	private void PasteStyles()
+	{
+		if (copyer== null || !copyer.targetObject)
+		{
+			return;
+		}
+
+		SerializedObject self = new SerializedObject(this);
+		if (self.targetObject == copyer.targetObject)
+		{
+			return;
+		}
+
+		self.CopyFromSerializedProperty(copyer.FindProperty("textData"));
+		self.CopyFromSerializedProperty(copyer.FindProperty("overrideOptions"));
+		self.ApplyModifiedProperties();
 	}
 #endif
 }
