@@ -124,7 +124,7 @@ public class LanguageStringData : ScriptableObject
             for (int j = 0; j < dataPairs.Count; j++)
             {
                 DataPair instanceDataPair = dataPairs[j];
-                if (datas.ContainsKey(instanceDataPair.key))
+                if (datas.ContainsKey(dataPairs[j].key))
                 {
                     #region EDITOR
 
@@ -134,7 +134,8 @@ public class LanguageStringData : ScriptableObject
                     for (int k = 0; k < lsDatas.Length; k++)
                     {
                         LanguageStringData stringData = lsDatas[k];
-                        if (stringData.dataPairs.Exists(d => d.key == instanceDataPair.key))
+						DataPair instanceDataPairTemp = dataPairs[j];
+                        if (stringData.dataPairs.Exists(d => d.key == instanceDataPairTemp.key))
                         {
                             stringBuilder.Append(" [").Append(stringData.name).Append("] ");
                         }
@@ -161,7 +162,7 @@ public class LanguageStringData : ScriptableObject
         public string key;
 
         [Multiline(2)] public string[] data;
-        public int CompareTo(DataPair other) => String.CompareOrdinal(key, other.key);
+        public int CompareTo(DataPair other) => string.CompareOrdinal(key, other.key);
     }
 
     public string groupName;

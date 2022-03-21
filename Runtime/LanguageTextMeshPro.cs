@@ -101,10 +101,10 @@ public class TextDataDrawer : PropertyDrawer
 		{
 			EditorGUI.PropertyField(line, property.FindPropertyRelative("scale"), true);
 		}
-
 	}
 
-	private static void PropertyFieldNoName(Rect lineToggle, SerializedProperty overriteOptionsProperty, string propertyRelative, GUIContent empty,
+	private static void PropertyFieldNoName(Rect lineToggle, SerializedProperty overriteOptionsProperty,
+		string propertyRelative, GUIContent empty,
 		float labelWidth)
 	{
 		EditorGUIUtility.labelWidth = 0;
@@ -313,6 +313,16 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 	}
 
 	[ButtonEx("PingDataFloder")]
+	private void UpdateOverrideValueAll()
+	{
+		LanguageTextMeshPro[] languageTextMeshPros = FindObjectsOfType<LanguageTextMeshPro>(true);
+		for (int i = 0; i < languageTextMeshPros.Length; i++)
+		{
+			LanguageTextMeshPro languageTextMeshPro = languageTextMeshPros[i];
+			languageTextMeshPro.UpdateOverrideValue();
+		}
+	}
+
 	private void UpdateOverrideValue()
 	{
 		overrideOptions.isOverrideFontAsset = isOverrideFontAsset;
@@ -321,28 +331,21 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 		overrideOptions.isOverrideCharacterSpacing = isOverrideCharacterSpacing;
 		overrideOptions.isOverrideWordSpacing = isOverrideWordSpacing;
 		overrideOptions.isOverrideScale = isOverrideScale;
+		this.Log("UpdateOverrideValue");
 		EditorUtility.SetDirty(this);
 	}
 
-	private static SerializedObject copyer; 
+	private static SerializedObject copyer;
+
 	[ButtonEx("PasteStyles")]
-	private void CopyStyles()
-	{
-		copyer = new SerializedObject(this);
-	}
+	private void CopyStyles() { copyer = new SerializedObject(this); }
 
 	private void PasteStyles()
 	{
-		if (copyer== null || !copyer.targetObject)
-		{
-			return;
-		}
+		if (copyer == null || !copyer.targetObject) { return; }
 
 		SerializedObject self = new SerializedObject(this);
-		if (self.targetObject == copyer.targetObject)
-		{
-			return;
-		}
+		if (self.targetObject == copyer.targetObject) { return; }
 
 		self.CopyFromSerializedProperty(copyer.FindProperty("textData"));
 		self.CopyFromSerializedProperty(copyer.FindProperty("overrideOptions"));
