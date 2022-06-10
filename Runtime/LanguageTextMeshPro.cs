@@ -312,7 +312,7 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 		Selection.activeObject = obj;
 	}
 
-	[ButtonEx("PingDataFloder")]
+	[ButtonEx("UpdateOverrideValue", "PingDataFloder")]
 	private void UpdateOverrideValueAll()
 	{
 		LanguageTextMeshPro[] languageTextMeshPros = FindObjectsOfType<LanguageTextMeshPro>(true);
