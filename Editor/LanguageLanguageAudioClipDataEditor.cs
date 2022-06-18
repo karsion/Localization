@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 
-[CustomEditor(typeof(LanguageStringData))]
-public class LanguageStringDataEditor : UnrealInspector
+[CustomEditor(typeof(LanguageAudioClipData))]
+public class LanguageLanguageAudioClipDataEditor : UnrealInspector
 {
 	public override void OnInspectorGUI()
 	{

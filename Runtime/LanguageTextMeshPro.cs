@@ -153,22 +153,6 @@ public class OverrideOptionsDrawer : PropertyDrawer
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class LanguageTextMeshPro : MonoBehaviourLanguage
 {
-	[Serializable]
-	public struct OverrideOptions
-	{
-		[HideInInspector] public bool isOverrideFontAsset;
-
-		[HideInInspector] public bool isOverrideFontSize;
-
-		[HideInInspector] public bool isOverrideFontStyles;
-
-		[HideInInspector] public bool isOverrideCharacterSpacing;
-
-		[HideInInspector] public bool isOverrideWordSpacing;
-
-		[HideInInspector] public bool isOverrideScale;
-	}
-
 	[EnableIf(nameof(isSetText))] public string key;
 	public bool isSetText = true;
 
@@ -266,6 +250,22 @@ public class LanguageTextMeshPro : MonoBehaviourLanguage
 		if (overrideOptions.isOverrideWordSpacing) { textSelf.wordSpacing = data.wordSpacing; }
 
 		if (overrideOptions.isOverrideScale) { textSelf.transform.localScale = data.scale; }
+	}
+
+	[Serializable]
+	public struct OverrideOptions
+	{
+		[HideInInspector] public bool isOverrideFontAsset;
+
+		[HideInInspector] public bool isOverrideFontSize;
+
+		[HideInInspector] public bool isOverrideFontStyles;
+
+		[HideInInspector] public bool isOverrideCharacterSpacing;
+
+		[HideInInspector] public bool isOverrideWordSpacing;
+
+		[HideInInspector] public bool isOverrideScale;
 	}
 
 	[Serializable]
