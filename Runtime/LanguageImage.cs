@@ -18,6 +18,11 @@ public class LanguageImage : MonoBehaviourLanguage
 
     public override void SwitchLanguage(int nLanguageIndex)
     {
+        if (!enabled)
+        {
+            return;
+        }
+
         if (sprites.Length == 0 || sprites.Length <= nLanguageIndex)
         {
             Debug.Log(this.Debug("切换语言错误：" + nLanguageIndex));

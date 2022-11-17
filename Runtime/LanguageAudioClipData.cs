@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using UnityEngine;
 using static NPinyin.Pinyin;
+using Object = UnityEngine.Object;
 
 #region UNITY_EDITOR
 
@@ -141,6 +143,56 @@ public class LanguageAudioClipData : ScriptableObject
 		}
 	}
 
+    internal static void PingData(string key)
+    {
+        string[] dataFiles = Directory.GetFiles(Application.dataPath + "/Localization/Resources/", "*",
+            SearchOption.AllDirectories);
+        //循环遍历每一个路径，单独加载
+        foreach (string path in dataFiles)
+        {
+            //替换路径中的反斜杠为正斜杠       
+            string strTempPath = path.Replace(@"\", "/");
+
+            //截取我们需要的路径
+            strTempPath = strTempPath.Substring(strTempPath.IndexOf("Assets"));
+
+            //根据路径加载资源
+            Object obj = AssetDatabase.LoadAssetAtPath(@strTempPath, typeof(Object));
+            LanguageAudioClipData lsd = obj as LanguageAudioClipData;
+            if (!lsd)
+            {
+                continue;
+            }
+
+            SerializedObject so = new SerializedObject(obj);
+            bool isHit = false;
+            for (int j = 0; j < lsd.dataPairs.Count; j++)
+            {
+                LanguageAudioClipData.DataPair lsdDataPair = lsd.dataPairs[j];
+                SerializedProperty sp = so.FindProperty("dataPairs");
+                sp = sp.GetArrayElementAtIndex(j);
+                if (lsdDataPair.key == key)
+                {
+                    sp.isExpanded = true;
+                    isHit = true;
+                }
+                else
+                {
+                    sp.isExpanded = false;
+                }
+            }
+
+            if (isHit)
+            {
+                EditorGUIUtility.PingObject(obj);
+                Selection.activeObject = obj;
+                return;
+            }
+        }
+
+        Debug.LogWarning($"没有找到这个Key => [{key}]");
+    }
+
 	[InitializeOnLoadMethod]
 #else
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -161,4 +213,6 @@ public class LanguageAudioClipData : ScriptableObject
 		};
 #endif
 	}
+
+    
 }

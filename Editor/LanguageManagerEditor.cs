@@ -25,8 +25,8 @@ public class LanguageManagerLeftButton
 			LanguageManager.SetLanguage(1);
 		}
 
-		GUILayout.Space(128);
-	}
+        GUILayout.Space(128);
+    }
 }
 
 public class LanguageManagerEditor

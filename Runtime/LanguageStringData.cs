@@ -15,6 +15,7 @@ using System.Text;
 using UnityEngine;
 using static NPinyin.Pinyin;
 using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
 
 [CreateAssetMenu]
 public class LanguageStringData : ScriptableObject
@@ -143,6 +144,56 @@ public class LanguageStringData : ScriptableObject
 	}
 
 	public void OpenJsonFile() { Process.Start(Path.Combine(PathHelper.strSaveDataPath, name + ".json")); }
+
+    internal static void PingData(string key)
+    {
+        string[] dataFiles = Directory.GetFiles(Application.dataPath + "/Localization/Resources/", "*",
+            SearchOption.AllDirectories);
+        //循环遍历每一个路径，单独加载
+        foreach (string path in dataFiles)
+        {
+            //替换路径中的反斜杠为正斜杠       
+            string strTempPath = path.Replace(@"\", "/");
+
+            //截取我们需要的路径
+            strTempPath = strTempPath.Substring(strTempPath.IndexOf("Assets"));
+
+            //根据路径加载资源
+            Object obj = AssetDatabase.LoadAssetAtPath(@strTempPath, typeof(Object));
+            LanguageStringData lsd = obj as LanguageStringData;
+            if (!lsd)
+            {
+                continue;
+            }
+
+            SerializedObject so = new SerializedObject(obj);
+            bool isHit = false;
+            for (int j = 0; j < lsd.dataPairs.Count; j++)
+            {
+                LanguageStringData.DataPair lsdDataPair = lsd.dataPairs[j];
+                SerializedProperty sp = so.FindProperty("dataPairs");
+                sp = sp.GetArrayElementAtIndex(j);
+                if (lsdDataPair.key == key)
+                {
+                    sp.isExpanded = true;
+                    isHit = true;
+                }
+                else
+                {
+                    sp.isExpanded = false;
+                }
+            }
+
+            if (isHit)
+            {
+                EditorGUIUtility.PingObject(obj);
+                Selection.activeObject = obj;
+                return;
+            }
+        }
+
+        Debug.LogWarning($"没有找到这个Key => [{key}]");
+    }
 
 	[InitializeOnLoadMethod]
 #else

@@ -70,7 +70,9 @@ public class LanguageText : MonoBehaviourLanguage
 {
     public bool isSetText = true;
 
-    [EnableIf(nameof(isSetText))] public string key;
+    [LanguageKey]
+    [EnableIf(nameof(isSetText))]
+    public string key;
     
     [HideInInspector] public bool isOverrideFontAsset;
 
