@@ -20,6 +20,8 @@ using Object = UnityEngine.Object;
 [CreateAssetMenu]
 public class LanguageStringData : ScriptableObject
 {
+	[LanguageKey]
+	public string search;
 	private static LanguageStringData[] lsDatas;
 
 	public static Dictionary<string, string[]> datas = new Dictionary<string, string[]>();
@@ -147,6 +149,8 @@ public class LanguageStringData : ScriptableObject
 
     internal static void PingData(string key)
     {
+        LanguageStringData lsdDefault = null;
+        List<string> strResults = new List<string>();
         string[] dataFiles = Directory.GetFiles(Application.dataPath + "/Localization/Resources/", "*",
             SearchOption.AllDirectories);
         //循环遍历每一个路径，单独加载
@@ -166,33 +170,73 @@ public class LanguageStringData : ScriptableObject
                 continue;
             }
 
+            if (lsd.name == "_Default")
+            {
+                lsdDefault = lsd;
+            }
+
             SerializedObject so = new SerializedObject(obj);
             bool isHit = false;
+            SerializedProperty spHit = null;
+            SerializedProperty spDataPairs = so.FindProperty("dataPairs");
             for (int j = 0; j < lsd.dataPairs.Count; j++)
             {
-                LanguageStringData.DataPair lsdDataPair = lsd.dataPairs[j];
-                SerializedProperty sp = so.FindProperty("dataPairs");
-                sp = sp.GetArrayElementAtIndex(j);
+                DataPair lsdDataPair = lsd.dataPairs[j];
+                SerializedProperty spData = spDataPairs.GetArrayElementAtIndex(j);
+                spData.isExpanded = false;
+
                 if (lsdDataPair.key == key)
                 {
-                    sp.isExpanded = true;
+                    spHit = spData;
                     isHit = true;
                 }
-                else
+
+                if (lsdDataPair.key.Contains(key))
                 {
-                    sp.isExpanded = false;
+	                strResults.Add($"{lsd.name}.{lsdDataPair.key}");
                 }
             }
 
             if (isHit)
             {
-                EditorGUIUtility.PingObject(obj);
-                Selection.activeObject = obj;
+                Selection.activeObject = null;
+
+                EditorApplication.delayCall += () =>
+                {
+	                EditorGUIUtility.PingObject(obj);
+	                Selection.activeObject = obj;
+	                spHit.isExpanded = true;
+                };
+
                 return;
             }
         }
 
         Debug.LogWarning($"没有找到这个Key => [{key}]");
+        for (int i = 0; i < strResults.Count; i++)
+        {
+	        Debug.Log(strResults[i]);
+        }
+        
+        Debug.LogWarning($"以上是找到的相关结果");
+        
+        bool isCreate = EditorUtility.DisplayDialog("本地化管理器提示", $"没有找到这个Key => [{key}]", "创建", "取消");
+        if (isCreate && lsdDefault)
+        {
+            lsdDefault.dataPairs.Add(new DataPair() {key = key, data = new string[LanguageManager.nLanguageCount],});
+            SerializedObject so = new SerializedObject(lsdDefault);
+            // bool isHit = false;
+            for (int j = 0; j < lsdDefault.dataPairs.Count; j++)
+            {
+                DataPair lsdDataPair = lsdDefault.dataPairs[j];
+                SerializedProperty sp = so.FindProperty("dataPairs");
+                sp = sp.GetArrayElementAtIndex(j);
+                sp.isExpanded = lsdDataPair.key == key;
+            }
+
+            EditorGUIUtility.PingObject(lsdDefault);
+            Selection.activeObject = lsdDefault;
+        }
     }
 
 	[InitializeOnLoadMethod]
